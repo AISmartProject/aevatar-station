@@ -36,9 +36,8 @@ public class AtomicGAgent : GAgentBase<AtomicGAgentState, AtomicAgentGEvent>, IA
             UserAddress = State.UserAddress,
             Type = State.Type,
             Properties = State.Properties,
-            BusinessAgentId = State.BusinessAgentId,
             Name = State.Name,
-            GroupId = State.GroupId
+            Groups = State.Groups
         };
         return await Task.FromResult(agentData);
     }
@@ -53,7 +52,6 @@ public class AtomicGAgent : GAgentBase<AtomicGAgentState, AtomicAgentGEvent>, IA
             AtomicGAgentId = this.GetPrimaryKey(),
             Type = data.Type,
             Properties = data.Properties,
-            BusinessAgentId = data.BusinessAgentId,
             Name = data.Name
         });
         await ConfirmEvents();
@@ -79,10 +77,20 @@ public class AtomicGAgent : GAgentBase<AtomicGAgentState, AtomicAgentGEvent>, IA
         await ConfirmEvents();
     }
     
-    public async Task SetGroupAsync(string groupId)
+    public async Task AddToGroupAsync(string groupId)
     {
-        _logger.LogInformation("SetUseFlagAsync");
-        RaiseEvent(new RegisterToGroupGEvent()
+        _logger.LogInformation("AddToGroupAsync");
+        RaiseEvent(new AddToGroupGEvent()
+        {
+            GroupId = groupId
+        });
+        await ConfirmEvents();
+    }
+    
+    public async Task RemoveFromGroupAsync(string groupId)
+    {
+        _logger.LogInformation("RemoveFromGroupAsync");
+        RaiseEvent(new RemoveFromGroupGEvent()
         {
             GroupId = groupId
         });
@@ -92,9 +100,10 @@ public class AtomicGAgent : GAgentBase<AtomicGAgentState, AtomicAgentGEvent>, IA
 
 public interface IAtomicGAgent : IStateGAgent<AtomicGAgentState>
 {
-    Task<AtomicAgentData?> GetAgentAsync();
+    Task<AtomicAgentData> GetAgentAsync();
     Task CreateAgentAsync(AtomicAgentData data);
     Task UpdateAgentAsync(AtomicAgentData data);
     Task DeleteAgentAsync();
-    Task SetGroupAsync(string groupId);
+    Task AddToGroupAsync(string groupId);
+    Task RemoveFromGroupAsync(string groupId);
 }

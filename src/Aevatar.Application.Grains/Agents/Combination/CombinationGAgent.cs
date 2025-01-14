@@ -81,6 +81,29 @@ public class CombinationGAgent : GAgentBase<CombinationGAgentState, CombinationA
         });
         await ConfirmEvents();
     }
+    
+    public async Task PublishEventAsync<T>(T @event) where T : EventBase
+    {
+        if (@event == null)
+        {
+            throw new ArgumentNullException(nameof(@event));
+        }
+
+        Logger.LogInformation( "publish event: {event}", @event);
+        await PublishAsync(@event);
+    }
+    
+    protected override Task OnRegisterAgentAsync(Guid agentGuid)
+    {
+        ++State.RegisteredAgents;
+        return Task.CompletedTask;
+    }
+
+    protected override Task OnUnregisterAgentAsync(Guid agentGuid)
+    {
+        --State.RegisteredAgents;
+        return Task.CompletedTask;
+    }
 }
 
 
@@ -91,4 +114,5 @@ public interface ICombinationGAgent : IStateGAgent<CombinationGAgentState>
     Task UpdateCombinationAsync(CombinationAgentData data);
     Task<AgentStatus> GetStatusAsync();
     Task DeleteCombinationAsync();
+    Task PublishEventAsync<T>(T @event) where T : EventBase;
 }

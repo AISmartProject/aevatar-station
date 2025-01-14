@@ -16,7 +16,7 @@ public class CombinationGAgentState : GroupAgentState
     [Id(2)] public string UserAddress { get; set; }
     [Id(3)] public string Name { get; set; }
     [Id(4)] public string GroupId { get; set; }
-    [Id(5)] public List<string> AgentComponent { get; set; }
+    [Id(5)] public Dictionary<string, string> AgentComponent { get; set; } //  {atomicId: businessId}
     
     public void Apply(CombineAgentGEvent combineAgentGEvent)
     {
@@ -37,7 +37,7 @@ public class CombinationGAgentState : GroupAgentState
     public void Apply(DeleteCombinationGEvent deleteCombinationGEvent)
     {
         Name = "";
-        AgentComponent = new List<string>();
+        AgentComponent = new ();
         GroupId = "";
         Status = AgentStatus.Deleted;
         UserAddress = "";
